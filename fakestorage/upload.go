@@ -200,7 +200,9 @@ func encodedMd5Hash(content []byte) string {
 
 func (s *Server) multipartUpload(bucketName string, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	_, params, err := mime.ParseMediaType(r.Header.Get(contentTypeHeader))
+	rawHeader := r.Header.Get(contentTypeHeader)
+	sanitizedHeader := strings.ReplaceAll(rawHeader, "'", "\"")
+	_, params, err := mime.ParseMediaType(sanitizedHeader)
 	if err != nil {
 		http.Error(w, "invalid Content-Type header", http.StatusBadRequest)
 		return
